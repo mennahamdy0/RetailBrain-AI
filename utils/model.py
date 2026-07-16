@@ -1,10 +1,16 @@
-from ultralytics import YOLO
+"""
+Model Loading Utilities
+"""
+
 import streamlit as st
+from ultralytics import YOLO
 
 
 @st.cache_resource
 def load_model():
 
-    model = YOLO("models/best.pt")
+    """
+    Load the trained YOLO model only once.
+    """
 
-    return model
+    return YOLO("models/best.pt")
