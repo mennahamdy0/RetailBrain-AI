@@ -1,16 +1,12 @@
-
 """
 Analytics Utilities
 """
 
 import numpy as np
+import pandas as pd
 
 
 def get_statistics(result):
-
-    """
-    Calculate detection statistics.
-    """
 
     total_products = len(result.boxes)
 
@@ -31,3 +27,29 @@ def get_statistics(result):
         "avg_confidence": average_confidence
 
     }
+
+
+def detection_table(result):
+
+    rows = []
+
+    boxes = result.boxes
+
+    if len(boxes) == 0:
+
+        return pd.DataFrame(columns=[
+            "ID",
+            "Confidence"
+        ])
+
+    for i, conf in enumerate(boxes.conf.cpu().numpy(), start=1):
+
+        rows.append({
+
+            "ID": i,
+
+            "Confidence": round(float(conf),3)
+
+        })
+
+    return pd.DataFrame(rows)
