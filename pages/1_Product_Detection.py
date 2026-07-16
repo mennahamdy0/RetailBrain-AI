@@ -114,3 +114,18 @@ if uploaded_file is not None:
             )
 
         st.success("Detection Completed Successfully ✅")
+        st.divider()
+
+st.subheader("Detection Table")
+
+table = detection_table(result)
+
+st.dataframe(
+
+    table,
+
+    use_container_width=True,
+
+    hide_index=True
+
+)
