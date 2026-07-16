@@ -1,6 +1,6 @@
 import streamlit as st
-import matplotlib.pyplot as plt
 import pandas as pd
+import plotly.express as px
 
 # ==========================================
 # Page Configuration
@@ -16,21 +16,21 @@ st.set_page_config(
 # Header
 # ==========================================
 
-st.title("📊 Retail Analytics Dashboard")
+st.title("Retail Analytics Dashboard")
 
-st.markdown("""
-Visualize AI-powered analytics generated from the product detection results.
-""")
+st.write(
+    "Analyze product detection results using interactive visualizations."
+)
 
 st.divider()
 
 # ==========================================
-# Check Session
+# Session State Check
 # ==========================================
 
 if "statistics" not in st.session_state:
 
-    st.warning("⚠ Please run Product Detection first.")
+    st.warning("Please run Product Detection first.")
 
     st.stop()
 
@@ -45,18 +45,42 @@ col1, col2 = st.columns(2)
 with col1:
 
     st.metric(
-        "📦 Total Products",
+        "Detected Products",
         statistics["products"]
     )
 
 with col2:
 
     st.metric(
-        "🎯 Average Confidence",
+        "Average Confidence",
         f"{statistics['avg_confidence']:.2f}"
     )
 
 st.divider()
+
+# ==========================================
+# DataFrame
+# ==========================================
+
+df = pd.DataFrame({
+
+    "Metric": [
+
+        "Products",
+
+        "Average Confidence"
+
+    ],
+
+    "Value": [
+
+        statistics["products"],
+
+        statistics["avg_confidence"]
+
+    ]
+
+})
 
 # ==========================================
 # Products Chart
@@ -64,28 +88,51 @@ st.divider()
 
 st.subheader("Detected Products")
 
-fig, ax = plt.subplots(figsize=(5,4))
+fig = px.bar(
 
-ax.bar(
-    ["Products"],
-    [statistics["products"]]
+    df.iloc[:1],
+
+    x="Metric",
+
+    y="Value",
+
+    text="Value"
+
 )
 
-ax.set_ylabel("Count")
+st.plotly_chart(
 
-st.pyplot(fig)
+    fig,
 
-st.divider()
+    use_container_width=True
+
+)
 
 # ==========================================
-# Confidence Progress
+# Confidence Chart
 # ==========================================
 
-st.subheader("Detection Confidence")
+st.subheader("Average Confidence")
 
-st.progress(float(statistics["avg_confidence"]))
+fig2 = px.bar(
 
-st.write(f"Confidence Score: **{statistics['avg_confidence']:.2%}**")
+    df.iloc[1:],
+
+    x="Metric",
+
+    y="Value",
+
+    text="Value"
+
+)
+
+st.plotly_chart(
+
+    fig2,
+
+    use_container_width=True
+
+)
 
 st.divider()
 
@@ -93,41 +140,32 @@ st.divider()
 # Summary Table
 # ==========================================
 
-summary = pd.DataFrame({
-
-    "Metric":[
-        "Detected Products",
-        "Average Confidence"
-    ],
-
-    "Value":[
-        statistics["products"],
-        round(statistics["avg_confidence"],3)
-    ]
-
-})
-
 st.subheader("Summary")
 
 st.dataframe(
-    summary,
-    use_container_width=True,
-    hide_index=True
-)
-st.divider()
 
-csv = summary.to_csv(index=False)
+    df,
+
+    use_container_width=True,
+
+    hide_index=True
+
+)
+
+# ==========================================
+# Download CSV
+# ==========================================
+
+csv = df.to_csv(index=False)
 
 st.download_button(
 
-    label="📥 Download Report (CSV)",
+    "Download Report",
 
-    data=csv,
+    csv,
 
     file_name="Retail_Report.csv",
 
-    mime="text/csv",
-
-    use_container_width=True
+    mime="text/csv"
 
 )
