@@ -1,6 +1,5 @@
 import streamlit as st
 from PIL import Image
-
 # ==========================================
 # Page Configuration
 # ==========================================
@@ -10,7 +9,6 @@ st.set_page_config(
     page_icon="🛒",
     layout="wide"
 )
-
 # ==========================================
 # Load CSS
 # ==========================================
