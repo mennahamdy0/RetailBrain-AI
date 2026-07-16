@@ -1,14 +1,23 @@
 import os
 import gdown
 
-MODEL_PATH = "models/best_fasterrcnn.pth"
+# ================================
+# Faster R-CNN
+# ================================
 
-URL = "DIRECT_DOWNLOAD_LINK"
+FRCNN_PATH = "models/best_fasterrcnn.pth"
 
-if not os.path.exists(MODEL_PATH):
+FRCNN_URL = "https://drive.google.com/uc?id=1c1HCmJIhpsF_jfosMAUjw9FTTwuoteeE"
 
-    gdown.download(
-        URL,
-        MODEL_PATH,
-        quiet=False
-    )
+
+def download_fasterrcnn():
+
+    if not os.path.exists(FRCNN_PATH):
+
+        os.makedirs("models", exist_ok=True)
+
+        gdown.download(
+            FRCNN_URL,
+            FRCNN_PATH,
+            quiet=False
+        )
