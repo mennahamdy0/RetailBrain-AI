@@ -1,5 +1,6 @@
 import streamlit as st
 from PIL import Image
+import cv2
 
 from utils.model import load_model
 from utils.prediction import run_prediction
@@ -74,15 +75,27 @@ if uploaded_file is not None:
     # Run Detection
     # ==========================================
 
-    if st.button(" Run Detection", use_container_width=True):
+    if st.button("🚀 Run Detection", use_container_width=True):
 
         with st.spinner("Running YOLO Detection..."):
 
-            result = run_prediction(model, image)
+            result, inference_time = run_prediction(
+                model,
+                image
+            )
 
             detected_image = draw_detection(result)
 
             statistics = get_statistics(result)
+
+            table = detection_table(result)
+
+            # Save statistics for Analytics page
+            st.session_state.statistics = statistics
+
+        # ==========================================
+        # Show Detection Result
+        # ==========================================
 
         with col2:
 
@@ -95,9 +108,13 @@ if uploaded_file is not None:
 
         st.divider()
 
+        # ==========================================
+        # Detection Statistics
+        # ==========================================
+
         st.subheader("Detection Statistics")
 
-        c1, c2 = st.columns(2)
+        c1, c2, c3 = st.columns(3)
 
         with c1:
 
@@ -109,23 +126,50 @@ if uploaded_file is not None:
         with c2:
 
             st.metric(
-                " Average Confidence",
+                "🎯 Average Confidence",
                 f"{statistics['avg_confidence']:.2f}"
             )
 
-        st.success("Detection Completed Successfully ✅")
+        with c3:
+
+            st.metric(
+                "⚡ Inference Time",
+                f"{inference_time:.3f} sec"
+            )
+
+        st.success("Detection Completed Successfully ")
+
         st.divider()
 
-st.subheader("Detection Table")
+        # ==========================================
+        # Detection Table
+        # ==========================================
 
-table = detection_table(result)
+        st.subheader("Detection Table")
 
-st.dataframe(
+        st.dataframe(
+            table,
+            use_container_width=True,
+            hide_index=True
+        )
 
-    table,
+        st.divider()
 
-    use_container_width=True,
+        # ==========================================
+        # Download Result
+        # ==========================================
 
-    hide_index=True
+        st.subheader("Download Detection Result")
 
-)
+        _, buffer = cv2.imencode(
+            ".jpg",
+            detected_image
+        )
+
+        st.download_button(
+            label=" Download Detection Image",
+            data=buffer.tobytes(),
+            file_name="RetailBrain_Detection.jpg",
+            mime="image/jpeg",
+            use_container_width=True
+        )
