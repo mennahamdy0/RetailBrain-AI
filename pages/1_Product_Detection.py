@@ -1,5 +1,8 @@
 import streamlit as st
 from PIL import Image
+import tempfile
+
+from utils.model import load_model
 
 # --------------------------------------------------
 # Page Configuration
